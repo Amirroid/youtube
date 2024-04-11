@@ -132,10 +132,14 @@ fun SplashIcon(onEnd: () -> Unit) {
     val closeAnimation = remember {
         Animatable(0f)
     }
+    val scaleX = remember {
+        Animatable(0f)
+    }
     LaunchedEffect(key1 = Unit) {
         delay(1000)
         launch {
             drawBoxAnimatable.animateTo(1f, tween(800, easing = EaseInExpo))
+            scaleX.animateTo(1f, tween(150, easing = EaseOutExpo))
         }
         launch {
             color.animateTo(onBackground, tween(800, easing = LinearEasing))
@@ -143,9 +147,8 @@ fun SplashIcon(onEnd: () -> Unit) {
         launch {
             iconColor.animateTo(onBackground, tween(800, easing = LinearEasing))
         }
-        delay(350)
-        progress.animateTo(1f, tween(800, easing = EaseInExpo))
-        delay(200)
+        delay(700)
+        progress.animateTo(1f, tween(800, easing = EaseOutExpo))
         closeAnimation.animateTo(1f, tween(800, easing = EaseInExpo))
         delay(500)
         onEnd.invoke()
@@ -160,15 +163,14 @@ fun SplashIcon(onEnd: () -> Unit) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val triangleSize = Size(iconSize.toPx(), iconSize.toPx())
             val rectSize = Size(
-                size.width * (1 - closeAnimation.value) * (drawBoxAnimatable.value).coerceIn(
+                (size.width).plus((40f * scaleX.value)) * drawBoxAnimatable.value.coerceIn(
                     0.6f,
                     1f
-                ),
+                ) * (1 - closeAnimation.value),
                 (1 - drawBoxAnimatable.value).coerceIn(0.1f, 1f) * size.height
             )
             var xRoundRect =
-                drawBoxAnimatable.value * triangleSize.width
-                    .plus(15f)
+                drawBoxAnimatable.value * triangleSize.width.plus(12)
             xRoundRect += size.width.minus(rectSize.width).div(2)
 //            val deltaX = (size.width.plus(triangleSize.width).div(2) - xRoundRect).times(
 //                closeAnimation.value
@@ -185,14 +187,19 @@ fun SplashIcon(onEnd: () -> Unit) {
                     20.dp.toPx() * (1 - drawBoxAnimatable.value),
                 )
             )
-            drawRect(
-                Color.Red,
-                size = rectSize.copy(width = rectSize.width * progress.value),
-                topLeft = Offset(
-                    xRoundRect + deltaX,
-                    size.height.minus(rectSize.height).div(2)
-                ),
-            )
+            if (progress.value * rectSize.width > 5f) {
+                drawRoundRect(
+                    Color.Red,
+                    size = rectSize.copy(width = rectSize.width * progress.value),
+                    topLeft = Offset(
+                        xRoundRect + deltaX,
+                        size.height.minus(rectSize.height).div(2)
+                    ),
+                    cornerRadius = CornerRadius(
+                        20.dp.toPx() * (1 - drawBoxAnimatable.value),
+                    ),
+                )
+            }
         }
         Icon(
             imageVector = Icons.Filled.PlayArrow,
