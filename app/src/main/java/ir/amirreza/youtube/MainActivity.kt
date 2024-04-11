@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -143,20 +144,21 @@ fun SplashIcon(onEnd: () -> Unit) {
             iconColor.animateTo(onBackground, tween(800, easing = LinearEasing))
         }
         delay(350)
-        progress.animateTo(1f, tween(700, easing = EaseInExpo))
+        progress.animateTo(1f, tween(800, easing = EaseInExpo))
         delay(200)
         closeAnimation.animateTo(1f, tween(800, easing = EaseInExpo))
         delay(500)
         onEnd.invoke()
     }
+    val iconSize = 48.dp
     BoxWithConstraints(
         modifier = Modifier
-            .offset((-36).dp * drawBoxAnimatable.value)
-            .size(200.dp, height = 60.dp),
+            .offset(-iconSize * drawBoxAnimatable.value)
+            .size(200.dp, height = 80.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val triangleSize = Size(36.dp.toPx(), 36.dp.toPx())
+            val triangleSize = Size(iconSize.toPx(), iconSize.toPx())
             val rectSize = Size(
                 size.width * (1 - closeAnimation.value) * (drawBoxAnimatable.value).coerceIn(
                     0.6f,
@@ -167,44 +169,44 @@ fun SplashIcon(onEnd: () -> Unit) {
             var xRoundRect =
                 drawBoxAnimatable.value * triangleSize.width
                     .plus(15f)
-            if (1 - drawBoxAnimatable.value > 0.6f) {
-                xRoundRect =
-                    (size.width.div(2) - xRoundRect - rectSize.width.div(2)) * (1 - drawBoxAnimatable.value)
-            }
-            val deltaX = size.width.plus(triangleSize.width).div(2) - xRoundRect
+            xRoundRect += size.width.minus(rectSize.width).div(2)
+//            val deltaX = (size.width.plus(triangleSize.width).div(2) - xRoundRect).times(
+//                closeAnimation.value
+//            )
+            val deltaX = 0
             drawRoundRect(
                 color.value,
                 size = rectSize,
                 topLeft = Offset(
-                    xRoundRect + deltaX * closeAnimation.value+ triangleSize.width * closeAnimation.value,
+                    xRoundRect + deltaX,
                     size.height.minus(rectSize.height).div(2)
                 ),
                 cornerRadius = CornerRadius(
-                    16.dp.toPx() * (1 - drawBoxAnimatable.value),
+                    20.dp.toPx() * (1 - drawBoxAnimatable.value),
                 )
             )
             drawRect(
                 Color.Red,
                 size = rectSize.copy(width = rectSize.width * progress.value),
                 topLeft = Offset(
-                    xRoundRect + deltaX * closeAnimation.value+ triangleSize.width * closeAnimation.value,
+                    xRoundRect + deltaX,
                     size.height.minus(rectSize.height).div(2)
                 ),
             )
         }
         Icon(
-            imageVector = Icons.Rounded.PlayArrow,
+            imageVector = Icons.Filled.PlayArrow,
             contentDescription = null,
             modifier = Modifier
-                .size(36.dp)
+                .size(iconSize)
                 .offset(
                     maxWidth
-                        .minus(36.dp)
+                        .minus(iconSize)
                         .div(2) * (1 - drawBoxAnimatable.value)
                             + maxWidth
-                        .minus(36.dp)
+                        .minus(iconSize)
                         .div(2) * closeAnimation.value
-                            + 36.dp * closeAnimation.value
+                            + iconSize * closeAnimation.value
                 ),
             tint = iconColor.value
         )
