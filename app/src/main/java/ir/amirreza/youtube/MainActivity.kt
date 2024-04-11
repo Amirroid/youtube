@@ -15,8 +15,16 @@ import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Ease
 import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseInElastic
+import androidx.compose.animation.core.EaseInExpo
 import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.EaseOutCirc
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.EaseOutElastic
+import androidx.compose.animation.core.EaseOutExpo
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -81,6 +89,7 @@ class MainActivity : ComponentActivity() {
                                 override fun onAnimationEnd(animation: Animation?) {
                                     it.remove()
                                 }
+
                                 override fun onAnimationRepeat(animation: Animation?) = Unit
 
                             })
@@ -125,18 +134,18 @@ fun SplashIcon(onEnd: () -> Unit) {
     LaunchedEffect(key1 = Unit) {
         delay(1000)
         launch {
-            drawBoxAnimatable.animateTo(1f, tween(500, easing = EaseOut))
+            drawBoxAnimatable.animateTo(1f, tween(800, easing = EaseInExpo))
         }
         launch {
-            color.animateTo(onBackground, tween(500, easing = EaseOut))
+            color.animateTo(onBackground, tween(800, easing = LinearEasing))
         }
         launch {
-            iconColor.animateTo(onBackground, tween(500, easing = EaseOut))
+            iconColor.animateTo(onBackground, tween(800, easing = LinearEasing))
         }
         delay(350)
-        progress.animateTo(1f, tween(300, easing = EaseIn))
+        progress.animateTo(1f, tween(700, easing = EaseInExpo))
         delay(200)
-        closeAnimation.animateTo(1f, tween(500))
+        closeAnimation.animateTo(1f, tween(800, easing = EaseInExpo))
         delay(500)
         onEnd.invoke()
     }
@@ -155,7 +164,9 @@ fun SplashIcon(onEnd: () -> Unit) {
                 ),
                 (1 - drawBoxAnimatable.value).coerceIn(0.1f, 1f) * size.height
             )
-            var xRoundRect = drawBoxAnimatable.value * triangleSize.width.plus(15f)
+            var xRoundRect =
+                drawBoxAnimatable.value * triangleSize.width
+                    .plus(15f)
             if (1 - drawBoxAnimatable.value > 0.6f) {
                 xRoundRect =
                     (size.width.div(2) - xRoundRect - rectSize.width.div(2)) * (1 - drawBoxAnimatable.value)
@@ -165,7 +176,7 @@ fun SplashIcon(onEnd: () -> Unit) {
                 color.value,
                 size = rectSize,
                 topLeft = Offset(
-                    xRoundRect + deltaX * closeAnimation.value,
+                    xRoundRect + deltaX * closeAnimation.value+ triangleSize.width * closeAnimation.value,
                     size.height.minus(rectSize.height).div(2)
                 ),
                 cornerRadius = CornerRadius(
@@ -174,9 +185,9 @@ fun SplashIcon(onEnd: () -> Unit) {
             )
             drawRect(
                 Color.Red,
-                size = rectSize.copy(width =rectSize.width * progress.value),
+                size = rectSize.copy(width = rectSize.width * progress.value),
                 topLeft = Offset(
-                    xRoundRect + deltaX * closeAnimation.value,
+                    xRoundRect + deltaX * closeAnimation.value+ triangleSize.width * closeAnimation.value,
                     size.height.minus(rectSize.height).div(2)
                 ),
             )
@@ -193,7 +204,7 @@ fun SplashIcon(onEnd: () -> Unit) {
                             + maxWidth
                         .minus(36.dp)
                         .div(2) * closeAnimation.value
-                    + 18.dp * closeAnimation.value
+                            + 36.dp * closeAnimation.value
                 ),
             tint = iconColor.value
         )
